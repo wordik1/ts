@@ -13,3 +13,10 @@ function createUser(id: number, name: string, email?: string, isActive: boolean 
         isActive
     };
 }
+
+interface Book{
+    title: string;
+    author: string;
+    year?: number;
+    genre: 'fiction' | 'non-fiction';
+}
