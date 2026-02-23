@@ -20,3 +20,7 @@ interface Book{
     year?: number;
     genre: 'fiction' | 'non-fiction';
 }
+
+function createBook(book: Book) : Book{
+    return book;
+}
