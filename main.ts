@@ -24,3 +24,14 @@ interface Book{
 function createBook(book: Book) : Book{
     return book;
 }
+
+const book1: Book = {
+    title: "Биба",
+    author: "Боба",
+    year: 1488,
+    genre: 'non-fiction'
+};
+
+const result1 = createBook(book1);
+console.log("Книга с year: ", result1);
+
