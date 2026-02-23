@@ -35,3 +35,12 @@ const book1: Book = {
 const result1 = createBook(book1);
 console.log("Книга с year: ", result1);
 
+const book2: Book = {
+    title: "Пупа",
+    author: "Лупа",
+    genre: 'fiction'
+};
+
+const result2 = createBook(book2);
+console.log("Книга без year: ", result2);
+
