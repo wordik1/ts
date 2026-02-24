@@ -6,12 +6,17 @@ interface User{
 }
 
 function createUser(id: number, name: string, email?: string, isActive: boolean = true) : User{
-    return {
+    const user: User = {
         id,
         name,
-        email,
         isActive
     };
+
+    if (email !== undefined){
+        user.email = email;
+    }
+
+    return user;
 }
 
 interface Book{
@@ -44,3 +49,17 @@ const book2: Book = {
 const result2 = createBook(book2);
 console.log("Книга без year: ", result2);
 
+function calculateArea(shape: 'circle', radius: number): number;
+function calculateArea(shape: 'square', side: number): number;
+
+function calculateArea(shape: 'circle' | 'square', param: number): number{
+    switch (shape){
+        case 'circle':
+            return Math.PI * Math.pow(param, 2);
+
+        case 'square':
+            return param * param;
+    }
+}
+
+console.log(calculateArea("circle", 3));
