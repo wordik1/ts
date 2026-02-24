@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function createUser(id, name, email, isActive = true) {
-    return {
+    const user = {
         id,
         name,
-        email,
         isActive
     };
+    if (email !== undefined) {
+        user.email = email;
+    }
+    return user;
 }
 function createBook(book) {
     return book;
@@ -35,4 +38,21 @@ function calculateArea(shape, param) {
     }
 }
 console.log(calculateArea("circle", 3));
+console.log(calculateArea("square", 12));
+function getStatusColor(status) {
+    switch (status) {
+        case 'active':
+            return 'green';
+        case 'inactive':
+            return 'gray';
+        case 'new':
+            return 'blue';
+    }
+}
+const activeColor = getStatusColor('active');
+console.log(`color active: ${activeColor}`);
+const inactiveColor = getStatusColor('inactive');
+console.log(`color inactive: ${inactiveColor}`);
+const newColor = getStatusColor('new');
+console.log(`color new: ${newColor}`);
 //# sourceMappingURL=main.js.map
