@@ -85,4 +85,25 @@ console.log(`color inactive: ${inactiveColor}`);
 const newColor = getStatusColor('new');
 console.log(`color new: ${newColor}`);
 
+type stringFormatter = (str: string, uppercase?: boolean) => string;
 
+const upperFirst: stringFormatter = (str: string, uppercase: boolean = false): string => {
+    if(str.length === 0) return str;
+
+    const result = str.charAt(0).toUpperCase() + str.slice(1);
+
+    return uppercase ? result.toUpperCase() : result;
+};
+
+const trimSpaces: stringFormatter = (str: string, uppercase: boolean = false): string => {
+    if(str.length === 0) return str;
+
+    const result = str.trim();
+
+    return uppercase ? result.toUpperCase() : result;
+}
+
+console.log(`"hello world" -> ${upperFirst("hello world")}`);
+console.log(`"hello world", true -> ${upperFirst("hello world", true)}`);
+console.log(`"  hello world  " -> "${trimSpaces("  hello world  ")}"`); 
+console.log(`"  hello world  ", true -> "${trimSpaces("  hello world  ", true)}"`);
