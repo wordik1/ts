@@ -107,3 +107,29 @@ console.log(`"hello world" -> ${upperFirst("hello world")}`);
 console.log(`"hello world", true -> ${upperFirst("hello world", true)}`);
 console.log(`"  hello world  " -> "${trimSpaces("  hello world  ")}"`); 
 console.log(`"  hello world  ", true -> "${trimSpaces("  hello world  ", true)}"`);
+
+function getFirstElement<T>(arr: T[]): T | undefined{
+    return arr.length > 0 ? arr[0] : undefined;
+}
+
+const numArray: number[] = [1, 2, 5, 6, 14];
+console.log(`первый элемент(числа): ${getFirstElement(numArray)}`);
+const strArray: string[] = ["бим", "бам", "бум"];
+console.log(`первый элемент(строки): ${getFirstElement(strArray)}`);
+const emptyArray: number[] = [];
+console.log(`пустой массив: ${getFirstElement(emptyArray)}`);
+
+interface HasId{
+    id: number;
+}
+
+function findById<T extends HasId>(items: T[], id: number): T | undefined{
+    return items.find(item => item.id === id);
+}
+
+const Users = [
+    {id: 1, name: "Name"},
+    {id: 2, name: "eshyo Name"}
+];
+
+console.log(findById(Users, 2));

@@ -71,4 +71,21 @@ console.log(`"hello world" -> ${upperFirst("hello world")}`);
 console.log(`"hello world", true -> ${upperFirst("hello world", true)}`);
 console.log(`"  hello world  " -> "${trimSpaces("  hello world  ")}"`);
 console.log(`"  hello world  ", true -> "${trimSpaces("  hello world  ", true)}"`);
+function getFirstElement(arr) {
+    return arr.length > 0 ? arr[0] : undefined;
+}
+const numArray = [1, 2, 5, 6, 14];
+console.log(`первый элемент(числа): ${getFirstElement(numArray)}`);
+const strArray = ["бим", "бам", "бум"];
+console.log(`первый элемент(строки): ${getFirstElement(strArray)}`);
+const emptyArray = [];
+console.log(`пустой массив: ${getFirstElement(emptyArray)}`);
+function findById(items, id) {
+    return items.find(item => item.id === id);
+}
+const Users = [
+    { id: 1, name: "Name" },
+    { id: 2, name: "eshyo Name" }
+];
+console.log(findById(Users, 2));
 //# sourceMappingURL=main.js.map
