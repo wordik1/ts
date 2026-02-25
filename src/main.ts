@@ -19,7 +19,7 @@ export function createUser(id: number, name: string, email?: string, isActive: b
     return user;
 }
 
-interface Book{
+export interface Book{
     title: string;
     author: string;
     year?: number;

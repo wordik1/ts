@@ -1,5 +1,5 @@
 import { it, describe, expect } from 'vitest';
-import { createUser, createBook, calculateArea, getStatusColor, upperFirst, trimSpaces, getFirstElement, findById } from './main.ts';
+import { createUser, createBook, calculateArea, getStatusColor, upperFirst, trimSpaces, getFirstElement, findById, type Book } from './main.ts';
 
 describe('test of functions', () =>{
 
@@ -11,6 +11,23 @@ describe('test of functions', () =>{
             expect(result.name).toBe("Nick");
             expect(result.email).toBe("bimbimbambam@gmail.com");
             expect(result.isActive).toBe(true);
+        }
+    )
+
+    it('createBook test', 
+        () => {
+            const book: Book = {
+                title: "Биба",
+                author: "Боба",
+                year: 1488,
+                genre: 'non-fiction'
+            };
+            const result = createBook(book);
+            expect(result).toBeTypeOf('object');
+            expect(result.title).toBe("Биба");
+            expect(result.author).toBe("Боба");
+            expect(result.year).toBe(1488);
+            expect(result.genre).toBe('non-fiction');
         }
     )
 
