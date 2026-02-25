@@ -55,4 +55,18 @@ describe('test of functions', () =>{
             expect(getStatusColor(newColor)).toBe('blue');
         }
     )
+
+    it('upperFirst test',
+        () => {
+            expect(upperFirst("hello world")).toBe("Hello world");
+            expect(upperFirst("hello world", true)).toBe("HELLO WORLD");
+        }
+    )
+
+    it('trimSpaces test',
+        () => {
+            expect(trimSpaces("  hello world  ")).toBe("hello world");
+            expect(trimSpaces("  hello world  ", true)).toBe("HELLO WORLD");
+        }
+    )
 })
