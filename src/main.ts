@@ -5,7 +5,7 @@ interface User{
     isActive: boolean;
 }
 
-function createUser(id: number, name: string, email?: string, isActive: boolean = true) : User{
+export function createUser(id: number, name: string, email?: string, isActive: boolean = true) : User{
     const user: User = {
         id,
         name,
@@ -26,7 +26,7 @@ interface Book{
     genre: 'fiction' | 'non-fiction';
 }
 
-function createBook(book: Book) : Book{
+export function createBook(book: Book) : Book{
     return book;
 }
 
@@ -49,10 +49,10 @@ const book2: Book = {
 const result2 = createBook(book2);
 console.log("Книга без year: ", result2);
 
-function calculateArea(shape: 'circle', radius: number): number;
-function calculateArea(shape: 'square', side: number): number;
+export function calculateArea(shape: 'circle', radius: number): number;
+export function calculateArea(shape: 'square', side: number): number;
 
-function calculateArea(shape: 'circle' | 'square', param: number): number{
+export function calculateArea(shape: 'circle' | 'square', param: number): number{
     switch (shape){
         case 'circle':
             return Math.PI * Math.pow(param, 2);
@@ -67,7 +67,7 @@ console.log(calculateArea("square", 12));
 
 type Status = 'active' | 'inactive' | 'new';
 
-function getStatusColor(status: Status): string{
+export function getStatusColor(status: Status): string{
     switch(status){
         case 'active':
             return 'green';
@@ -87,7 +87,7 @@ console.log(`color new: ${newColor}`);
 
 type stringFormatter = (str: string, uppercase?: boolean) => string;
 
-const upperFirst: stringFormatter = (str: string, uppercase: boolean = false): string => {
+export const upperFirst: stringFormatter = (str: string, uppercase: boolean = false): string => {
     if(str.length === 0) return str;
 
     const result = str.charAt(0).toUpperCase() + str.slice(1);
@@ -95,7 +95,7 @@ const upperFirst: stringFormatter = (str: string, uppercase: boolean = false): s
     return uppercase ? result.toUpperCase() : result;
 };
 
-const trimSpaces: stringFormatter = (str: string, uppercase: boolean = false): string => {
+export const trimSpaces: stringFormatter = (str: string, uppercase: boolean = false): string => {
     if(str.length === 0) return str;
 
     const result = str.trim();
@@ -108,7 +108,7 @@ console.log(`"hello world", true -> ${upperFirst("hello world", true)}`);
 console.log(`"  hello world  " -> "${trimSpaces("  hello world  ")}"`); 
 console.log(`"  hello world  ", true -> "${trimSpaces("  hello world  ", true)}"`);
 
-function getFirstElement<T>(arr: T[]): T | undefined{
+export function getFirstElement<T>(arr: T[]): T | undefined{
     return arr.length > 0 ? arr[0] : undefined;
 }
 
@@ -123,7 +123,7 @@ interface HasId{
     id: number;
 }
 
-function findById<T extends HasId>(items: T[], id: number): T | undefined{
+export function findById<T extends HasId>(items: T[], id: number): T | undefined{
     return items.find(item => item.id === id);
 }
 
