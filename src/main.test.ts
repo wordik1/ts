@@ -69,4 +69,15 @@ describe('test of functions', () =>{
             expect(trimSpaces("  hello world  ", true)).toBe("HELLO WORLD");
         }
     )
+
+    it('getFirstElement test',
+        () => {
+            const numArray: number[] = [1, 2, 5, 6, 14];
+            expect(getFirstElement(numArray)).toBe(1);
+            const strArray: string[] = ["бим", "бам", "бум"];
+            expect(getFirstElement(strArray)).toBe("бим");
+            const emptyArray: number[] = [];
+            expect(getFirstElement(emptyArray)).toBe(undefined);
+        }
+    )
 })
