@@ -95,8 +95,10 @@ console.log("\u043F\u0443\u0441\u0442\u043E\u0439 \u043C\u0430\u0441\u0441\u0438
 function findById(items, id) {
     return items.find(function (item) { return item.id === id; });
 }
-var Users = [
+var User = [
     { id: 1, name: "Name" },
-    { id: 2, name: "eshyo Name" }
+    { id: 2, name: "eshyo Name" },
+    { id: 5, name: "Hih" },
+    { id: 24, name: "Huh" }
 ];
-console.log(findById(Users, 2));
+console.log(findById(User, 5));

@@ -80,4 +80,18 @@ describe('test of functions', () =>{
             expect(getFirstElement(emptyArray)).toBe(undefined);
         }
     )
+
+    it('findById test',
+        () => {
+            const Users = [
+                {id: 1, name: "Name"},
+                {id: 2, name: "eshyo Name"},
+                {id: 5, name: "Hih"},
+                {id: 24, name: "Huh"}
+            ]
+            expect(findById(Users, 24)?.id).toBe(24);
+            expect(findById(Users, 24)?.name).toBe("Huh");
+            expect(findById(Users, 100)).toBe(undefined);
+        }
+    )
 })
