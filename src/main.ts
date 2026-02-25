@@ -65,7 +65,7 @@ export function calculateArea(shape: 'circle' | 'square', param: number): number
 console.log(calculateArea("circle", 3));
 console.log(calculateArea("square", 12));
 
-type Status = 'active' | 'inactive' | 'new';
+export type Status = 'active' | 'inactive' | 'new';
 
 export function getStatusColor(status: Status): string{
     switch(status){

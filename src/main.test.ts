@@ -1,5 +1,5 @@
 import { it, describe, expect } from 'vitest';
-import { createUser, createBook, calculateArea, getStatusColor, upperFirst, trimSpaces, getFirstElement, findById, type Book } from './main.ts';
+import { createUser, createBook, calculateArea, getStatusColor, upperFirst, trimSpaces, getFirstElement, findById, type Book, type Status } from './main.ts';
 
 describe('test of functions', () =>{
 
@@ -42,6 +42,17 @@ describe('test of functions', () =>{
         () => {
             let result = calculateArea('square', 12);
             expect(result).toBe(144);
+        }
+    )
+
+    it('getStatusColor test',
+        () => {
+            const activeColor: Status = 'active';
+            expect(getStatusColor(activeColor)).toBe('green');
+            const inactiveColor: Status = 'inactive';
+            expect(getStatusColor(inactiveColor)).toBe('gray');
+            const newColor: Status = 'new';
+            expect(getStatusColor(newColor)).toBe('blue');
         }
     )
 })
