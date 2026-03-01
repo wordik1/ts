@@ -1,3 +1,6 @@
+import { readFile, writeFile } from "node:fs/promises";
+
+
 function csvToJSON(input: string[], delimiter: string) : object[]{
     if(!Array.isArray(input) || input.length === 0){
         throw new Error("Неверный ввод!")
@@ -30,3 +33,17 @@ function csvToJSON(input: string[], delimiter: string) : object[]{
 
 let res = csvToJSON(["p1;p2;p3;p4", "1;A;b;c", "2;B;v;d"], ';');
 console.log(res);
+
+async function formatCSVFileToJSONFile(input: string, output: string, delimiter: string): Promise<void>{
+    const csv = await readFile(input, "utf8");
+
+    const line = csv.split(/\r?\n/);
+    if(line.length === 0){
+        throw new Error("Таблица пустая!");
+    }
+
+    const jsonArr = csvToJSON(line, delimiter);
+    const json = JSON.stringify(jsonArr, null, 2);
+
+    writeFile(output, json, 'utf8');
+}
