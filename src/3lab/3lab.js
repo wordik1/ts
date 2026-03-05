@@ -36,6 +36,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.csvToJSON = csvToJSON;
+exports.formatCSVFileToJSONFile = formatCSVFileToJSONFile;
 var promises_1 = require("node:fs/promises");
 function csvToJSON(input, delimiter) {
     if (!Array.isArray(input) || input.length === 0) {
@@ -83,3 +85,4 @@ function formatCSVFileToJSONFile(input, output, delimiter) {
         });
     });
 }
+formatCSVFileToJSONFile("/home/wordik/typescript/ts/src/3lab/spreadsheet.csv", "output", ",");
