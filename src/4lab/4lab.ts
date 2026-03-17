@@ -4,7 +4,7 @@ export type Sort<T> = <K extends keyof T>(key: K) => Transform<T>;
 export type Group<T, K extends keyof T> = { key: T[K], items: T[] };
 export type GroupBy<T> = <K extends keyof T>(key: K) => Transform<Group<T, K>>;
 export type GroupTransform<T, K extends keyof T> = (groups: Group<T, K>[]) => Group<T, K>[];
-export type Having<T> = <T, K extends keyof T>(predicate: (group: Group<T, K>) => boolean) => GroupTransform<T, K>;
+export type Having<T> = <K extends keyof T>(predicate: (group: Group<T, K>) => boolean) => GroupTransform<T, K>;
 
 type Step<T> = Transform<T> | GroupTransform<T, any>;
 export function query<T>(...steps: Step<T>[]): Transform<T>{
