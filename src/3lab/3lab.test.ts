@@ -53,10 +53,10 @@ describe('проверка считывания и создания файла:'
             vi.mocked(fs.readFile).mockResolvedValue(csv);
             vi.mocked(fs.writeFile).mockResolvedValue(undefined);
 
-            await formatCSVFileToJSONFile('input.csv', 'output.json', ',');
+            await formatCSVFileToJSONFile('spreadsheet.csv', 'output.json', ',');
 
             expect(fs.readFile).toHaveBeenCalledTimes(1);
-            expect(fs.readFile).toHaveBeenCalledWith('input.csv', 'utf8');
+            expect(fs.readFile).toHaveBeenCalledWith('spreadsheet.csv', 'utf8');
 
             expect(fs.writeFile).toHaveBeenCalledTimes(1);
             const expectedJSON = JSON.stringify([
