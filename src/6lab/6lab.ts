@@ -5,3 +5,7 @@ type DeepReadonly<T> = {
       : DeepReadonly<T[K]>
     : T[K];
 };
+
+type PickedByType<T, U> = {
+    [K in keyof T as T[K] extends U ? K : never]: T[K];
+};
