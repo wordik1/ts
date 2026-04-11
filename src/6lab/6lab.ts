@@ -9,3 +9,7 @@ type DeepReadonly<T> = {
 type PickedByType<T, U> = {
     [K in keyof T as T[K] extends U ? K : never]: T[K];
 };
+
+type EventHandlers<T> = {
+  [K in keyof T & string as `on${Capitalize<K>}`]: (event: T[K]) => void;
+};
