@@ -48,4 +48,4 @@ export async function formatCSVFileToJSONFile(input: string, output: string, del
     writeFile(output, json, 'utf8');
 }
 
-formatCSVFileToJSONFile("/home/wordik/typescript/ts/src/3lab/spreadsheet.csv", "output", ",");
+formatCSVFileToJSONFile("./spreadsheet.csv", "output", ",");
