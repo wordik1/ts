@@ -32,11 +32,11 @@ interface QueryBuilder<T, S, ItemType> {
     execute: (data: T[]) => ItemType[];
 }
 
-function makeWhere<T>(key: keyof T, value: T[keyof T]): Transform<T> {
+export function makeWhere<T>(key: keyof T, value: T[keyof T]): Transform<T> {
     return (data: T[]) => data.filter(item => item[key] === value);
 }
 
-function makeGroupBy<T, K extends keyof T>(key: K): (data: T[]) => Group<T, K>[] {
+export function makeGroupBy<T, K extends keyof T>(key: K): (data: T[]) => Group<T, K>[] {
     return (data: T[]) => {
         const map = new Map<T[K], T[]>();
         for (const item of data) {
@@ -48,13 +48,13 @@ function makeGroupBy<T, K extends keyof T>(key: K): (data: T[]) => Group<T, K>[]
     };
 }
 
-function makeHaving<T, K extends keyof T>(
+export function makeHaving<T, K extends keyof T>(
     predicate: (group: Group<T, K>) => boolean
 ): GroupTransform<T, K> {
     return (groups: Group<T, K>[]) => groups.filter(predicate);
 }
 
-function makeSortGroup<T, K extends keyof T>(key: K): GroupTransform<T, K> {
+export function makeSortGroup<T, K extends keyof T>(key: K): GroupTransform<T, K> {
     return (groups: Group<T, K>[]) =>
         [...groups].sort((a, b) => {
             const va = a.key;
