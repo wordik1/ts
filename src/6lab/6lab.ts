@@ -1,4 +1,4 @@
-type DeepReadonly<T> = {
+export type DeepReadonly<T> = {
   readonly [K in keyof T]: T[K] extends object
     ? T[K] extends Function
       ? T[K]
@@ -6,10 +6,10 @@ type DeepReadonly<T> = {
     : T[K];
 };
 
-type PickedByType<T, U> = {
+export type PickedByType<T, U> = {
     [K in keyof T as T[K] extends U ? K : never]: T[K];
 };
 
-type EventHandlers<T> = {
+export type EventHandlers<T> = {
   [K in keyof T & string as `on${Capitalize<K>}`]: (event: T[K]) => void;
 };
