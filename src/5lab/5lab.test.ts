@@ -184,3 +184,66 @@ describe('частичные пайплайны', () => {
         expect(result).toHaveLength(1);
     });
 });
+
+describe('система типов — expectTypeOf', () => {
+
+    it('where возвращает QueryBuilder<T, HasWhere, T>', () => {
+        const builder = query<User>().where('city', 'Moscow');
+
+        expectTypeOf(builder.execute).toBeFunction();
+
+        // После where можно вызвать groupBy
+        expectTypeOf(builder.groupBy).toBeFunction();
+        // После where можно вызвать ещё where
+        expectTypeOf(builder.where).toBeFunction();
+    });
+
+    it('groupBy после where возвращает QueryBuilder<T, HasGroupBy, Group<T, K>>', () => {
+        const builder = query<User>()
+            .where('city', 'Moscow')
+            .groupBy('city');
+
+        expectTypeOf(builder.execute).toBeFunction();
+        // После groupBy можно вызвать having
+        expectTypeOf(builder.having).toBeFunction();
+    });
+
+    it('having после groupBy возвращает QueryBuilder<T, HasHaving, Group<T, K>>', () => {
+        const builder = query<User>()
+            .where('city', 'Moscow')
+            .groupBy('city')
+            .having(group => group.items.length > 0);
+
+        expectTypeOf(builder.execute).toBeFunction();
+        // После having можно вызвать sort
+        expectTypeOf(builder.sort).toBeFunction();
+    });
+
+    it('sort после having возвращает QueryBuilder<T, HasSort, ItemType>', () => {
+        const builder = query<User>()
+            .where('city', 'Moscow')
+            .groupBy('city')
+            .having(() => true)
+            .sort('city');
+
+        expectTypeOf(builder.execute).toBeFunction();
+    });
+
+    it('тип результата execute — T[] для where-only', () => {
+        const builder = query<User>().where('age', 30);
+        expectTypeOf(builder.execute).parameter(0).toMatchTypeOf<User[]>();
+    });
+
+    it('тип результата execute — Group<T, K>[] после groupBy', () => {
+        const builder = query<User>().where('city', 'Moscow').groupBy('city');
+        expectTypeOf(builder.execute).parameter(0).toMatchTypeOf<User[]>();
+    });
+
+    it('тип результата execute — Group<T, K>[] после having', () => {
+        const builder = query<User>()
+            .where('city', 'Moscow')
+            .groupBy('city')
+            .having(() => true);
+        expectTypeOf(builder.execute).parameter(0).toMatchTypeOf<User[]>();
+    });
+});
