@@ -60,4 +60,27 @@ const App = () => {
 
     loadBooks();
   }, [])
+
+  if(loading){
+    return <div className="loading">Загрузка книг...</div>
+  }
+  if(error){
+    return <div className="error">Ошибка: {error}</div>
+  }
+
+  return (
+  <div className="app">
+    <h1 className="app-title">Библиотека книг</h1>
+    <div className="book-container">
+      {books.map((book) => (<BookCard
+        key = {book.id}
+        title = {book.title}
+        authors = {book.authors}
+        coverBlob = {book.coverBlob}
+      />))}
+    </div>
+  </div>
+  )
 }
+
+export default App;
