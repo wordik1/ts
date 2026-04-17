@@ -29,5 +29,35 @@ const App = () => {
     }
   };
 
-  
+  useEffect(() => {
+    const loadBooks = async () => {
+      try{
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('https://fakeapi.extendsclass.com/books');
+        const booksData = await response.json();
+
+        const booksWithCovers = await Promise.all(
+          booksData.map(async (book) => {
+            const coverBlob = await fetchBookCover(book.isbn);
+            return {
+              ...book,
+              coverBlob
+            };
+          })
+        );
+
+        setBooks(booksWithCovers);
+      }
+      catch(err){
+        setError('Ошибка загрузки книг: ' + err.message);
+      }
+      finally{
+        setLoading(false);
+      }
+    };
+
+    loadBooks();
+  }, [])
 }
