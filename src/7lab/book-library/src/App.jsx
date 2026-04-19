@@ -35,7 +35,7 @@ const App = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('https://fakeapi.extendsclass.com/books');
+        const response = await fetch('/api/books');
         const booksData = await response.json();
 
         const booksWithCovers = await Promise.all(

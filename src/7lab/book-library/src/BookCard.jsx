@@ -1,4 +1,5 @@
 import React from "react";
+import './BookCard.css'
 
 const BookCard = ({title, authors, coverBlob}) => {
     const coverURL = coverBlob ? URL.createObjectURL(coverBlob) : null;
