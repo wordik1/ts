@@ -34,10 +34,23 @@ export const formatTime = (timestamp: number, locale: string = 'ru-RU'): string 
   });
 };
 
-export const getTodayForecast = (list: ForecastItem[]): ForecastItem[] => {
+export const getHourlyForecast = (list: ForecastItem[], days: number = 2): ForecastItem[] => {
   if (!list?.length) return [];
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const maxItems = days * 8;
+  return list.slice(0, maxItems);
+};
 
-  return list.filter(item => item.dt_txt.startsWith(todayStr));
+export const groupHourlyByDay = (list: ForecastItem[]): Record<string, ForecastItem[]> => {
+  const grouped: Record<string, ForecastItem[]> = {};
+  
+  list.forEach(item => {
+    const date = item.dt_txt.split(' ')[0];
+    if (!grouped[date]) {
+      grouped[date] = [];
+    }
+    grouped[date].push(item);
+  });
+  
+  return grouped;
 };

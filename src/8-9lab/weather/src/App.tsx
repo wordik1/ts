@@ -7,6 +7,7 @@ import CitySearch from './components/CitySearch';
 import CurrentWeather from './components/CurrentWeather';
 import ForecastList from './components/ForecastList';
 import AirPollutionInfo from './components/AirPollutionInfo';
+import HourlyForecast from './components/HourlyForecast';
 
 interface CityCoords {
   lat: number;
@@ -96,6 +97,7 @@ const App: React.FC = () => {
           <>
             <CurrentWeather data={weatherData} />
             <ForecastList list={weatherData.list} />
+            <HourlyForecast list={weatherData.list} />
             <AirPollutionInfo data={airData} />
           </>
         )}
