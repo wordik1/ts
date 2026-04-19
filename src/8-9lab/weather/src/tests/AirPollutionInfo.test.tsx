@@ -28,7 +28,6 @@ describe('AirPollutionInfo', () => {
     const { container } = render(<AirPollutionInfo data={mockAirData} />);
     const badge = screen.getByTestId('aqi-badge');
     
-    // AQI 2 = '#8BC34A' согласно aqiInfo
     expect(badge.style.backgroundColor).toBe('rgb(139, 195, 74)');
   });
 
