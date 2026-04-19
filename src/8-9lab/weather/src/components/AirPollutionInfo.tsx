@@ -5,7 +5,10 @@ import type { AirPollutionInfoProps, AQIInfo } from '../types/weather';
 const AirPollutionInfo: React.FC<AirPollutionInfoProps> = React.memo(({ data }) => {
   if (!data?.list?.[0]) return null;
   
-  const { aqi, components } = data.list[0];
+  const item = data.list[0];
+  const { aqi } = item.main;
+  const { components } = item;
+
   const info: AQIInfo = aqiInfo[aqi] || aqiInfo[5];
 
   return (

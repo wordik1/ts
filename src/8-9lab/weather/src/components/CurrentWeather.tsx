@@ -18,7 +18,7 @@ const CurrentWeather: React.FC<CurrentWeatherProps> = React.memo(({ data }) => {
       <p data-testid="current-desc">{weather.description}</p>
       <p>Ощущается как {roundTemp(feels_like)}°C</p>
       <p className="weather-details">
-         {speed} м/с | 󰖌 {humidity}%
+        💨 {speed} м/с | 💧 {humidity}%
       </p>
     </section>
   );

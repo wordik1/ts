@@ -1,121 +1,113 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useEffect, useCallback } from 'react';
+import './App.css';
+import { weatherToBackground, REFRESH_INTERVAL_MS } from './constants';
+import { API } from './services/weatherApi';
+import type { ForecastResponse, AirPollutionResponse } from './types/weather';
+import CitySearch from './components/CitySearch';
+import CurrentWeather from './components/CurrentWeather';
+import ForecastList from './components/ForecastList';
+import AirPollutionInfo from './components/AirPollutionInfo';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+interface CityCoords {
+  lat: number;
+  lon: number;
 }
 
-export default App
+const App: React.FC = () => {
+  const [weatherData, setWeatherData] = useState<ForecastResponse | null>(null);
+  const [airData, setAirData] = useState<AirPollutionResponse | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [cityCoords, setCityCoords] = useState<CityCoords | null>(null);
+  const [cityName, setCityName] = useState<string>('');
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+
+  const fetchData = useCallback(async (lat: number, lon: number): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const [weatherRes, airRes] = await Promise.all([
+        API.getWeatherForecast(lat, lon),
+        API.getAirPollution(lat, lon),
+      ]);
+      
+      setWeatherData(weatherRes);
+      setAirData(airRes);
+      setLastUpdate(new Date());
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Ошибка загрузки данных';
+      setError(message);
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Инициализация и автообновление каждые 3 часа
+  useEffect(() => {
+    if (!cityCoords) return;
+    
+    fetchData(cityCoords.lat, cityCoords.lon);
+    
+    const intervalId = setInterval(() => {
+      fetchData(cityCoords.lat, cityCoords.lon);
+    }, REFRESH_INTERVAL_MS);
+    
+    return () => clearInterval(intervalId);
+  }, [cityCoords, fetchData]);
+
+  const handleSearch = useCallback((lat: number, lon: number, name: string): void => {
+    setCityCoords({ lat, lon });
+    setCityName(name);
+  }, []);
+
+  // Динамический фон
+  const currentWeatherMain = weatherData?.list?.[0]?.weather?.[0]?.main;
+  const bgStyle: React.CSSProperties = {
+    background: weatherToBackground[currentWeatherMain ?? ''] || weatherToBackground.default,
+  };
+
+  return (
+    <div className="app-container" style={bgStyle} data-testid="app-container">
+      <header className="app-header">
+        <h1>☁️ Погода & Воздух</h1>
+        <CitySearch onSearch={handleSearch} loading={loading} />
+        {cityName && (
+          <p className="city-name" data-testid="city-name">{cityName}</p>
+        )}
+        {lastUpdate && (
+          <p className="update-time" data-testid="last-update">
+            Обновлено: {lastUpdate.toLocaleTimeString('ru-RU')}
+          </p>
+        )}
+      </header>
+
+      <main className="app-content">
+        {error && (
+          <div className="error-message" role="alert" data-testid="error-message">
+            ⚠️ {error}
+          </div>
+        )}
+        
+        {loading && !weatherData && (
+          <div className="loader" data-testid="loading">Загрузка погоды...</div>
+        )}
+        
+        {weatherData && (
+          <>
+            <CurrentWeather data={weatherData} />
+            <ForecastList list={weatherData.list} />
+            <AirPollutionInfo data={airData} />
+          </>
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <p>Данные предоставлены OpenWeather API • Автообновление каждые 3 часа</p>
+      </footer>
+    </div>
+  );
+};
+
+export default App;

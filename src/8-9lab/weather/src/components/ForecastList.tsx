@@ -27,7 +27,7 @@ const ForecastList: React.FC<ForecastListProps> = React.memo(({ list }) => {
               </p>
               <p className="forecast-desc">{weather.description}</p>
               <p className="forecast-details">
-                 {item.wind.speed} м/с | 󰖌 {item.main.humidity}%
+                💨 {item.wind.speed} м/с | 💧 {item.main.humidity}%
               </p>
             </article>
           );
