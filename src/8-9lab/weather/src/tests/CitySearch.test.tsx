@@ -1,16 +1,17 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CitySearch from '../components/CitySearch';
-import { API } from '../services/weatherApi';
-import type { GeoLocation } from '../types/weather';
+import * as weatherApi from '../services/weatherApi';
 
-vi.mock('../../services/weatherApi', () => ({
+vi.mock('../services/weatherApi', () => ({
   API: {
     searchCity: vi.fn(),
+    getWeatherForecast: vi.fn(),
+    getAirPollution: vi.fn(),
   },
 }));
 
-const mockedAPI = vi.mocked(API);
+const mockSearchCity = vi.mocked(weatherApi.API.searchCity);
 
 describe('CitySearch', () => {
   const mockOnSearch = vi.fn();
@@ -21,21 +22,20 @@ describe('CitySearch', () => {
 
   it('должен рендерить форму поиска', () => {
     render(<CitySearch onSearch={mockOnSearch} loading={false} />);
-    
     expect(screen.getByTestId('city-search-form')).toBeInTheDocument();
     expect(screen.getByTestId('city-input')).toBeInTheDocument();
     expect(screen.getByTestId('search-button')).toBeInTheDocument();
   });
 
   it('должен вызывать onSearch при успешном поиске', async () => {
-    const mockCity: GeoLocation = { name: 'London', lat: 51.5, lon: -0.12 };
-    mockedAPI.searchCity.mockResolvedValueOnce([mockCity]);
+    // 🔹 3. Используем mockSearchCity напрямую
+    mockSearchCity.mockResolvedValueOnce([{ name: 'London', lat: 51.5, lon: -0.12 }]);
 
     render(<CitySearch onSearch={mockOnSearch} loading={false} />);
-    
+
     const input = screen.getByTestId('city-input');
     const button = screen.getByTestId('search-button');
-    
+
     fireEvent.change(input, { target: { value: 'London' } });
     fireEvent.click(button);
 
@@ -45,10 +45,10 @@ describe('CitySearch', () => {
   });
 
   it('должен показывать ошибку, если город не найден', async () => {
-    mockedAPI.searchCity.mockResolvedValueOnce([]);
+    mockSearchCity.mockResolvedValueOnce([]);
 
     render(<CitySearch onSearch={mockOnSearch} loading={false} />);
-    
+
     fireEvent.change(screen.getByTestId('city-input'), { target: { value: 'NotFound' } });
     fireEvent.click(screen.getByTestId('search-button'));
 
@@ -63,10 +63,10 @@ describe('CitySearch', () => {
   });
 
   it('должен очищать поле ввода после успешного поиска', async () => {
-    mockedAPI.searchCity.mockResolvedValueOnce([{ name: 'Paris', lat: 48.85, lon: 2.35 }]);
+    mockSearchCity.mockResolvedValueOnce([{ name: 'Paris', lat: 48.85, lon: 2.35 }]);
 
     render(<CitySearch onSearch={mockOnSearch} loading={false} />);
-    
+
     const input = screen.getByTestId('city-input');
     fireEvent.change(input, { target: { value: 'Paris' } });
     fireEvent.click(screen.getByTestId('search-button'));
