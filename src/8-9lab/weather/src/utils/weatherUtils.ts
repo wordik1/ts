@@ -33,3 +33,11 @@ export const formatTime = (timestamp: number, locale: string = 'ru-RU'): string 
     minute: '2-digit',
   });
 };
+
+export const getTodayForecast = (list: ForecastItem[]): ForecastItem[] => {
+  if (!list?.length) return [];
+
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  return list.filter(item => item.dt_txt.startsWith(todayStr));
+};

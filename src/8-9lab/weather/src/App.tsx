@@ -44,7 +44,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Инициализация и автообновление каждые 3 часа
   useEffect(() => {
     if (!cityCoords) return;
     
@@ -62,7 +61,6 @@ const App: React.FC = () => {
     setCityName(name);
   }, []);
 
-  // Динамический фон
   const currentWeatherMain = weatherData?.list?.[0]?.weather?.[0]?.main;
   const bgStyle: React.CSSProperties = {
     background: weatherToBackground[currentWeatherMain ?? ''] || weatherToBackground.default,
@@ -71,7 +69,7 @@ const App: React.FC = () => {
   return (
     <div className="app-container" style={bgStyle} data-testid="app-container">
       <header className="app-header">
-        <h1>☁️ Погода & Воздух</h1>
+        <h1>☁️ Weather Report</h1>
         <CitySearch onSearch={handleSearch} loading={loading} />
         {cityName && (
           <p className="city-name" data-testid="city-name">{cityName}</p>
