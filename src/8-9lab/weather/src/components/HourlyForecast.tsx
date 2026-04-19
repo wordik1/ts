@@ -1,46 +1,50 @@
 import React, { useMemo } from 'react';
 import WeatherIcon from './WeatherIcon';
-import { getHourlyForecast, groupHourlyByDay, roundTemp, formatDate } from '../utils/weatherUtils';
+import { getHourlyForecast, roundTemp } from '../utils/weatherUtils';
 import type { ForecastListProps } from '../types/weather';
 
 const HourlyForecast: React.FC<ForecastListProps> = React.memo(({ list }) => {
-  const hourlyData = useMemo(() => getHourlyForecast(list, 2), [list]);
-  const groupedByDay = useMemo(() => groupHourlyByDay(hourlyData), [hourlyData]);
-  const days = Object.keys(groupedByDay);
+  const hourlyData = useMemo(() => getHourlyForecast(list, 1), [list]);
 
   if (!hourlyData.length) return null;
+
+  // Определяем, где начинается завтрашний день (для разделителя)
+  const firstDate = hourlyData[0]?.dt_txt.split(' ')[0];
+  const tomorrowIndex = hourlyData.findIndex(item => 
+    item.dt_txt.split(' ')[0] !== firstDate
+  );
 
   return (
     <div className="hourly-section">
       <h3>Почасовой прогноз</h3>
       
-      {days.map((date, index) => {
-        const dayItems = groupedByDay[date];
-        const isToday = index === 0;
-        
-        return (
-          <div key={date} className="hourly-day-block">
-            <span className="hourly-day-title">
-              {isToday ? 'Сегодня' : formatDate(Date.parse(date + 'T00:00:00') / 1000)}
-            </span>
-            
-            <div className="hourly-scroll-container">
-              {dayItems.map((item) => {
-                const time = item.dt_txt.split(' ')[1].substring(0, 5);
-                const weather = item.weather[0];
+      <div className="hourly-scroll-container">
+        {hourlyData.map((item, index) => {
+          const time = item.dt_txt.split(' ')[1].substring(0, 5);
+          const weather = item.weather[0];
+          const itemDate = item.dt_txt.split(' ')[0];
+          const isTomorrow = itemDate !== firstDate;
+          
+          // Показываем метку "Завтра" перед первым элементом завтрашнего дня
+          const showDayLabel = isTomorrow && index === tomorrowIndex;
 
-                return (
-                  <div key={item.dt} className="hourly-card">
-                    <span className="hourly-time">{time}</span>
-                    <WeatherIcon iconCode={weather.icon} description={weather.description} size="2x" />
-                    <span className="hourly-temp">{roundTemp(item.main.temp)}°</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
+          return (
+            <React.Fragment key={item.dt}>
+              {showDayLabel && (
+                <div className="hourly-day-label">
+                  <span>Завтра</span>
+                </div>
+              )}
+              
+              <div className={`hourly-card ${isTomorrow ? 'tomorrow' : ''}`}>
+                <span className="hourly-time">{time}</span>
+                <WeatherIcon iconCode={weather.icon} description={weather.description} size="2x" />
+                <span className="hourly-temp">{roundTemp(item.main.temp)}°</span>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 });

@@ -102,10 +102,6 @@ const App: React.FC = () => {
           </>
         )}
       </main>
-
-      <footer className="app-footer">
-        <p>Данные предоставлены OpenWeather API • Автообновление каждые 3 часа</p>
-      </footer>
     </div>
   );
 };

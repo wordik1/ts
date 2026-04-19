@@ -34,7 +34,7 @@ export const formatTime = (timestamp: number, locale: string = 'ru-RU'): string 
   });
 };
 
-export const getHourlyForecast = (list: ForecastItem[], days: number = 2): ForecastItem[] => {
+export const getHourlyForecast = (list: ForecastItem[], days: number = 1): ForecastItem[] => {
   if (!list?.length) return [];
 
   const maxItems = days * 8;
