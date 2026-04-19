@@ -8,7 +8,6 @@ const HourlyForecast: React.FC<ForecastListProps> = React.memo(({ list }) => {
 
   if (!hourlyData.length) return null;
 
-  // Определяем, где начинается завтрашний день (для разделителя)
   const firstDate = hourlyData[0]?.dt_txt.split(' ')[0];
   const tomorrowIndex = hourlyData.findIndex(item => 
     item.dt_txt.split(' ')[0] !== firstDate
