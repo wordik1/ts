@@ -73,7 +73,7 @@ describe('App', () => {
 
     it('должен рендерить заголовок и форму поиска', () => {
         render(<App />);
-        expect(screen.getByText('☁️ Погода & Воздух')).toBeInTheDocument();
+        expect(screen.getByText('☁️ Weather Report')).toBeInTheDocument();
         expect(screen.getByTestId('mock-city-search')).toBeInTheDocument();
     });
 

@@ -24,7 +24,6 @@ const HourlyForecast: React.FC<ForecastListProps> = React.memo(({ list }) => {
           const itemDate = item.dt_txt.split(' ')[0];
           const isTomorrow = itemDate !== firstDate;
           
-          // Показываем метку "Завтра" перед первым элементом завтрашнего дня
           const showDayLabel = isTomorrow && index === tomorrowIndex;
 
           return (
