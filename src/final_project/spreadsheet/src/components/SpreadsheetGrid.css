@@ -1,0 +1,86 @@
+.spreadsheet-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: system-ui, -apple-system, sans-serif;
+  outline: none;
+}
+.formula-bar {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  height: 32px;
+}
+.cell-address {
+  width: 48px;
+  text-align: center;
+  font-weight: 500;
+  color: #495057;
+  border-right: 1px solid #dee2e6;
+  margin-right: 8px;
+}
+.formula-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+}
+.grid-wrapper {
+  flex: 1;
+  overflow: auto;
+}
+.grid-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f8f9fa;
+}
+.corner { width: 40px; min-width: 40px; border-right: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; }
+.col-header, .row-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  font-size: 12px;
+  color: #6c757d;
+  user-select: none;
+}
+.col-header { min-width: 100px; height: 24px; border-right: 1px solid #e9ecef; border-bottom: 1px solid #dee2e6; }
+.grid-body { display: flex; flex-direction: column; }
+.grid-row { display: flex; }
+.row-header { width: 40px; min-width: 40px; border-right: 1px solid #dee2e6; border-bottom: 1px solid #e9ecef; }
+.grid-cell {
+  min-width: 100px;
+  height: 24px;
+  border-right: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  cursor: cell;
+  position: relative;
+}
+.grid-cell.selected {
+  outline: 2px solid #0d6efd;
+  outline-offset: -2px;
+  z-index: 1;
+}
+.cell-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+.cell-editor {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 1px solid #0d6efd;
+  outline: none;
+  padding: 0 4px;
+  font: inherit;
+  z-index: 3;
+}
