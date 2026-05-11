@@ -54,7 +54,6 @@ export const evaluateFormula = (
   if (!formula.startsWith('=')) return formula;
   const expr = formula.slice(1).trim().toUpperCase();
 
-  // Multi-argument functions: MIN, MAX, COUNT, IF
   const funcMatch = expr.match(/^(SUM|AVERAGE|MIN|MAX|COUNT|COUNTA)\((.+)\)$/);
   if (funcMatch) {
     const [, funcName, args] = funcMatch;
@@ -68,7 +67,6 @@ export const evaluateFormula = (
     }
   }
 
-  // IF(condition, valueIfTrue, valueIfFalse)
   const ifMatch = expr.match(/^IF\((.+),(.+),(.+)\)$/);
   if (ifMatch) {
     const [, condition, trueVal, falseVal] = ifMatch;
@@ -86,7 +84,6 @@ export const evaluateFormula = (
     }
   }
 
-  // Substitute cell references in arithmetic expressions
   const resolved = expr.replace(/([A-Z]+\d+)/g, match => {
     const cell = getCell(match);
     if (!cell) return '0';
@@ -95,7 +92,6 @@ export const evaluateFormula = (
   });
 
   try {
-    // eslint-disable-next-line no-new-func
     const result = new Function(`"use strict"; return (${resolved})`)();
     if (typeof result === 'number' && !isFinite(result)) return '#DIV/0!';
     return result;
