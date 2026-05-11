@@ -23,6 +23,27 @@ export interface CellCoords {
   row: number;
 }
 
+export interface SelectionRange {
+  start: CellCoords;
+  end: CellCoords;
+}
+
+export interface ContextMenuState {
+  x: number;
+  y: number;
+  col: number;
+  row: number;
+  type: 'cell' | 'col-header' | 'row-header';
+}
+
+export interface ColSize {
+  [colIndex: number]: number;
+}
+
+export interface RowSize {
+  [rowIndex: number]: number;
+}
+
 export interface Document {
   id: string;
   title: string;
@@ -31,7 +52,6 @@ export interface Document {
   ownerId: string;
   rowCount: number;
   colCount: number;
-
   preview: Record<string, CellData>;
 }
 

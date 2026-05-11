@@ -10,18 +10,21 @@ export const colToIndex = (colStr: string): number => {
 
 export const indexToCol = (index: number): string => {
   let col = '';
-  while (index >= 0) {
-    col = String.fromCharCode((index % 26) + 65) + col;
-    index = Math.floor(index / 26) - 1;
+  let i = index;
+  while (i >= 0) {
+    col = String.fromCharCode((i % 26) + 65) + col;
+    i = Math.floor(i / 26) - 1;
   }
   return col;
 };
 
 export const parseRange = (range: string): string[] => {
   const [start, end] = range.split(':');
-  const startCol = colToIndex(start.replace(/\d/g, ''));
+  if (!end) return [start.trim()];
+
+  const startCol = colToIndex(start.replace(/\d/g, '').trim());
   const startRow = parseInt(start.replace(/\D/g, ''), 10) - 1;
-  const endCol = colToIndex(end.replace(/\d/g, ''));
+  const endCol = colToIndex(end.replace(/\d/g, '').trim());
   const endRow = parseInt(end.replace(/\D/g, ''), 10) - 1;
 
   const cells: string[] = [];
@@ -33,25 +36,58 @@ export const parseRange = (range: string): string[] => {
   return cells;
 };
 
-export const evaluateFormula = (formula: string, getCell: (id: string) => CellData | undefined): string | number | boolean => {
-  if (!formula.startsWith('=')) return formula;
-  const expr = formula.slice(1).toUpperCase();
+const getNumericValues = (
+  args: string,
+  getCell: (id: string) => CellData | undefined
+): number[] => {
+  return parseRange(args)
+    .map(id => getCell(id))
+    .filter(Boolean)
+    .map(c => Number(c!.computedValue ?? c!.value))
+    .filter(n => !isNaN(n));
+};
 
-  const funcMatch = expr.match(/^(SUM|AVERAGE)\((.+)\)$/);
+export const evaluateFormula = (
+  formula: string,
+  getCell: (id: string) => CellData | undefined
+): string | number | boolean => {
+  if (!formula.startsWith('=')) return formula;
+  const expr = formula.slice(1).trim().toUpperCase();
+
+  // Multi-argument functions: MIN, MAX, COUNT, IF
+  const funcMatch = expr.match(/^(SUM|AVERAGE|MIN|MAX|COUNT|COUNTA)\((.+)\)$/);
   if (funcMatch) {
     const [, funcName, args] = funcMatch;
-    const cellIds = parseRange(args);
-    const values = cellIds
-      .map(id => getCell(id))
-      .filter(Boolean)
-      .map(c => Number(c!.computedValue ?? c!.value))
-      .filter(n => !isNaN(n));
+    const values = getNumericValues(args, getCell);
 
-    if (funcName === 'SUM') return values.reduce((a, b) => a + b, 0);
-    if (funcName === 'AVERAGE') return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+    switch (funcName) {
+      case 'SUM':
+        return values.reduce((a, b) => a + b, 0);
+      case 'AVERAGE':
+        return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+    }
   }
 
-  let evaluated = expr.replace(/([A-Z]+\d+)/g, match => {
+  // IF(condition, valueIfTrue, valueIfFalse)
+  const ifMatch = expr.match(/^IF\((.+),(.+),(.+)\)$/);
+  if (ifMatch) {
+    const [, condition, trueVal, falseVal] = ifMatch;
+    try {
+      const resolvedCondition = condition.replace(/([A-Z]+\d+)/g, match => {
+        const cell = getCell(match);
+        if (!cell) return '0';
+        const val = cell.computedValue ?? cell.value;
+        return isNaN(Number(val)) ? `"${val}"` : String(val);
+      });
+      const result = new Function(`"use strict"; return (${resolvedCondition})`)();
+      return result ? trueVal.trim() : falseVal.trim();
+    } catch {
+      return '#ERROR!';
+    }
+  }
+
+  // Substitute cell references in arithmetic expressions
+  const resolved = expr.replace(/([A-Z]+\d+)/g, match => {
     const cell = getCell(match);
     if (!cell) return '0';
     const val = cell.computedValue ?? cell.value;
@@ -59,7 +95,10 @@ export const evaluateFormula = (formula: string, getCell: (id: string) => CellDa
   });
 
   try {
-    return new Function(`"use strict"; return (${evaluated})`)();
+    // eslint-disable-next-line no-new-func
+    const result = new Function(`"use strict"; return (${resolved})`)();
+    if (typeof result === 'number' && !isFinite(result)) return '#DIV/0!';
+    return result;
   } catch {
     return '#ERROR!';
   }
