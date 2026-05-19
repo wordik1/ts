@@ -45,7 +45,7 @@ export const DocumentCard: React.FC<Props> = ({ doc, onOpen, onRename, onDuplica
         <button className="doc-action-btn" onClick={() => onOpen(doc.id)}>📂</button>
         <button className="doc-action-btn" onClick={() => setEditing(true)}>✏️</button>
         <button className="doc-action-btn" onClick={() => onDuplicate(doc.id)}>📋</button>
-        <button className="doc-action-btn danger" onClick={() => setConfirmDelete(true)}>🗑</button>
+        <button className="doc-action-btn danger" onClick={() => setConfirmDelete(true)}>🗑️</button>
       </div>
 
       {confirmDelete && (

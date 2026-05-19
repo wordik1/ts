@@ -26,7 +26,6 @@ export const useAutosave = (
     }
   };
 
-  // Debounced autosave on cells change
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     if (!docId) return;
@@ -44,7 +43,6 @@ export const useAutosave = (
     return () => { if (timer.current) clearTimeout(timer.current); };
   }, [cells, docId, rowCount, colCount]);
 
-  // Ctrl+S
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveNow(); }
@@ -53,7 +51,6 @@ export const useAutosave = (
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  // beforeunload
   useEffect(() => {
     const onUnload = (e: BeforeUnloadEvent) => {
       if (status === 'unsaved') e.preventDefault();

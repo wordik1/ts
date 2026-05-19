@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import type { CellData } from '../../types';
 import { documentService } from '../../services/documentService';
 import { SpreadsheetGrid } from '../SpreadsheetGrid/mainComp';
@@ -8,9 +8,9 @@ interface Props { documentId: string; onBack: () => void; }
 
 export const SpreadsheetPage: React.FC<Props> = ({ documentId, onBack }) => {
   const doc = documentService.listDocuments().find(d => d.id === documentId);
-  const [cells, setCells] = useState<Record<string, CellData>>(() => documentService.loadCells(documentId));
   const [title, setTitle] = useState(doc?.title ?? '');
   const [editingTitle, setEditingTitle] = useState(false);
+  const cellsRef = useRef<Record<string, CellData>>({});
 
   if (!doc) return (
     <div className="sp-error">
@@ -29,6 +29,16 @@ export const SpreadsheetPage: React.FC<Props> = ({ documentId, onBack }) => {
     if (title.trim()) documentService.renameDocument(documentId, title.trim());
   };
 
+  const handleExportCSV = () => {
+    const cells = cellsRef.current;
+    downloadFile(`${title}.csv`, documentService.exportCSV(cells, doc.rowCount, doc.colCount), 'text/csv');
+  };
+
+  const handleExportJSON = () => {
+    const cells = cellsRef.current;
+    downloadFile(`${title}.json`, documentService.exportJSON(cells), 'application/json');
+  };
+
   return (
     <div className="sp-page">
       <div className="sp-topbar">
@@ -40,17 +50,18 @@ export const SpreadsheetPage: React.FC<Props> = ({ documentId, onBack }) => {
           }
         </div>
         <div className="sp-toolbar">
-          <button className="btn btn-ghost" onClick={() => downloadFile(`${title}.csv`, documentService.exportCSV(cells, doc.rowCount, doc.colCount), 'text/csv')}>⬇ CSV</button>
-          <button className="btn btn-ghost" onClick={() => downloadFile(`${title}.json`, documentService.exportJSON(cells), 'application/json')}>⬇ JSON</button>
+          <button className="btn btn-ghost" onClick={handleExportCSV}>⬇ CSV</button>
+          <button className="btn btn-ghost" onClick={handleExportJSON}>⬇ JSON</button>
         </div>
       </div>
 
       <div className="sp-grid-wrapper">
         <SpreadsheetGrid
           documentId={documentId}
-          initialCells={cells}
+          initialCells={documentService.loadCells(documentId)}
           initialRowCount={doc.rowCount}
           initialColCount={doc.colCount}
+          onCellsChange={(cells) => { cellsRef.current = cells; }}
         />
       </div>
     </div>

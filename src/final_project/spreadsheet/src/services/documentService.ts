@@ -1,4 +1,5 @@
 import type { CellData, SpreadsheetDocument } from '../types';
+import { evaluateFormula } from '../utils/formula';
 
 const DOCS_KEY = 'ss_docs';
 const cellsKey = (id: string) => `ss_cells_${id}`;
@@ -7,6 +8,16 @@ const load = <T>(key: string): T | null => {
   try { return JSON.parse(localStorage.getItem(key) ?? 'null'); } catch { return null; }
 };
 const save = (key: string, val: unknown) => localStorage.setItem(key, JSON.stringify(val));
+
+const recomputeCells = (cells: Record<string, CellData>): Record<string, CellData> => {
+  const out = { ...cells };
+  for (const [id, cell] of Object.entries(out)) {
+    if (cell.formula) {
+      out[id] = { ...cell, computedValue: evaluateFormula(cell.formula, (id2) => out[id2]) };
+    }
+  }
+  return out;
+};
 
 export const documentService = {
   listDocuments(): SpreadsheetDocument[] {
@@ -63,12 +74,25 @@ export const documentService = {
   },
 
   exportCSV(cells: Record<string, CellData>, rows: number, cols: number): string {
+    const computedCells = recomputeCells(cells);
     const lines: string[] = [];
     for (let r = 0; r < rows; r++) {
       const row: string[] = [];
       for (let c = 0; c < cols; c++) {
-        const val = String(cells[`${String.fromCharCode(65 + c)}${r + 1}`]?.computedValue ?? cells[`${String.fromCharCode(65 + c)}${r + 1}`]?.value ?? '');
-        row.push(val.includes(',') || val.includes('"') ? `"${val.replace(/"/g, '""')}"` : val);
+        const cellId = `${String.fromCharCode(65 + c)}${r + 1}`;
+        const cell = computedCells[cellId];
+        let val = '';
+        if (cell) {
+          if (cell.computedValue !== undefined && cell.computedValue !== null) {
+            val = String(cell.computedValue);
+          } else if (cell.value) {
+            val = String(cell.value);
+          }
+        }
+        if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+          val = `"${val.replace(/"/g, '""')}"`;
+        }
+        row.push(val);
       }
       lines.push(row.join(','));
     }

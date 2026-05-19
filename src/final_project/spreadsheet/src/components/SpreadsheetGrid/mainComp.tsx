@@ -18,6 +18,7 @@ interface Props {
   initialCells?: Record<string, CellData>;
   initialRowCount?: number;
   initialColCount?: number;
+  onCellsChange?: (cells: Record<string, CellData>) => void;
 }
 
 export const SpreadsheetGrid: React.FC<Props> = ({
@@ -25,6 +26,7 @@ export const SpreadsheetGrid: React.FC<Props> = ({
   initialCells,
   initialRowCount = 100,
   initialColCount = 26,
+  onCellsChange,
 }) => {
   const [cells, setCells] = useState<Record<string, CellData>>(initialCells ?? {});
   const [rowCount, setRowCount] = useState(initialRowCount);
@@ -42,9 +44,14 @@ export const SpreadsheetGrid: React.FC<Props> = ({
   const resizingCol = useRef<{ col: number; x0: number; w0: number } | null>(null);
   const resizingRow = useRef<{ row: number; y0: number; h0: number } | null>(null);
 
-  const { status, saveNow } = useAutosave(documentId, cells, rowCount, colCount);
+  const { status, saveNow: _saveNow } = useAutosave(documentId, cells, rowCount, colCount);
 
-  useEffect(() => { if (initialCells) setCells(initialCells); }, [initialCells]);
+  useEffect(() => {
+    if (initialCells) {
+      setCells(initialCells);
+      onCellsChange?.(initialCells);
+    }
+  }, [initialCells]);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -75,10 +82,14 @@ export const SpreadsheetGrid: React.FC<Props> = ({
   };
 
   const setCell = (id: string, value: string) => {
-    setCells(prev => recompute({
-      ...prev,
-      [id]: { ...prev[id] ?? defaultCell(), value, formula: value.startsWith('=') ? value : undefined, computedValue: undefined },
-    }));
+    setCells(prev => {
+      const next = recompute({
+        ...prev,
+        [id]: { ...prev[id] ?? defaultCell(), value, formula: value.startsWith('=') ? value : undefined, computedValue: undefined },
+      });
+      onCellsChange?.(next);
+      return next;
+    });
   };
 
   const stopEditing = () => { setEditing(null); containerRef.current?.focus(); };
@@ -135,7 +146,9 @@ export const SpreadsheetGrid: React.FC<Props> = ({
             const id = getCellId(col2, row2);
             next[id] = { ...defaultCell(), style: prev[id]?.style ?? defaultStyle() };
           }
-        return recompute(next);
+        const recomputed = recompute(next);
+        onCellsChange?.(recomputed);
+        return recomputed;
       });
       return;
     }
@@ -153,6 +166,7 @@ export const SpreadsheetGrid: React.FC<Props> = ({
         next[r >= at ? getCellId(c, r + 1) : id] = cell;
       }
       for (let c = 0; c < colCount; c++) next[getCellId(c, at)] = defaultCell();
+      onCellsChange?.(next);
       return next;
     });
     setRowCount(n => n + 1);
@@ -167,6 +181,7 @@ export const SpreadsheetGrid: React.FC<Props> = ({
         if (r < at) next[id] = cell;
         else if (r > at) next[getCellId(c, r - 1)] = cell;
       }
+      onCellsChange?.(next);
       return next;
     });
     setRowCount(n => n - 1);
@@ -180,6 +195,7 @@ export const SpreadsheetGrid: React.FC<Props> = ({
         next[c >= at ? getCellId(c + 1, r) : id] = cell;
       }
       for (let r = 0; r < rowCount; r++) next[getCellId(at, r)] = defaultCell();
+      onCellsChange?.(next);
       return next;
     });
     setColCount(n => n + 1);
@@ -194,6 +210,7 @@ export const SpreadsheetGrid: React.FC<Props> = ({
         if (c < at) next[id] = cell;
         else if (c > at) next[getCellId(c - 1, r)] = cell;
       }
+      onCellsChange?.(next);
       return next;
     });
     setColCount(n => n - 1);
