@@ -36,30 +36,12 @@ export interface ContextMenuState {
   type: 'cell' | 'col-header' | 'row-header';
 }
 
-export interface ColSize {
-  [colIndex: number]: number;
-}
-
-export interface RowSize {
-  [rowIndex: number]: number;
-}
-
-export interface Document {
+export interface SpreadsheetDocument {
   id: string;
   title: string;
   createdAt: string;
   updatedAt: string;
-  ownerId: string;
   rowCount: number;
   colCount: number;
   preview: Record<string, CellData>;
-}
-
-export interface AuthState {
-  user: { id: string; name: string; email: string } | null;
-  accessToken: string | null;
-  refreshToken: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
 }

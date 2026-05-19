@@ -1,94 +1,52 @@
 import type { CellData } from '../types';
 
-export const colToIndex = (colStr: string): number => {
-  let index = 0;
-  for (let i = 0; i < colStr.length; i++) {
-    index = index * 26 + (colStr.charCodeAt(i) - 64);
-  }
-  return index - 1;
+type GetCell = (id: string) => CellData | undefined;
+
+const colToIndex = (s: string) => {
+  let i = 0;
+  for (const ch of s) i = i * 26 + ch.charCodeAt(0) - 64;
+  return i - 1;
 };
 
-export const indexToCol = (index: number): string => {
+const indexToCol = (i: number) => {
   let col = '';
-  let i = index;
-  while (i >= 0) {
-    col = String.fromCharCode((i % 26) + 65) + col;
-    i = Math.floor(i / 26) - 1;
-  }
+  while (i >= 0) { col = String.fromCharCode((i % 26) + 65) + col; i = Math.floor(i / 26) - 1; }
   return col;
 };
 
-export const parseRange = (range: string): string[] => {
-  const [start, end] = range.split(':');
-  if (!end) return [start.trim()];
-
-  const startCol = colToIndex(start.replace(/\d/g, '').trim());
-  const startRow = parseInt(start.replace(/\D/g, ''), 10) - 1;
-  const endCol = colToIndex(end.replace(/\d/g, '').trim());
-  const endRow = parseInt(end.replace(/\D/g, ''), 10) - 1;
-
-  const cells: string[] = [];
-  for (let r = Math.min(startRow, endRow); r <= Math.max(startRow, endRow); r++) {
-    for (let c = Math.min(startCol, endCol); c <= Math.max(startCol, endCol); c++) {
-      cells.push(`${indexToCol(c)}${r + 1}`);
-    }
-  }
-  return cells;
+const rangeIds = (range: string): string[] => {
+  const [a, b] = range.split(':');
+  if (!b) return [a.trim()];
+  const c1 = colToIndex(a.replace(/\d/g, ''));
+  const r1 = parseInt(a.replace(/\D/g, ''), 10) - 1;
+  const c2 = colToIndex(b.replace(/\d/g, ''));
+  const r2 = parseInt(b.replace(/\D/g, ''), 10) - 1;
+  const ids: string[] = [];
+  for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++)
+    for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++)
+      ids.push(`${indexToCol(c)}${r + 1}`);
+  return ids;
 };
 
-const getNumericValues = (
-  args: string,
-  getCell: (id: string) => CellData | undefined
-): number[] => {
-  return parseRange(args)
-    .map(id => getCell(id))
-    .filter(Boolean)
-    .map(c => Number(c!.computedValue ?? c!.value))
+const nums = (args: string, get: GetCell) =>
+  rangeIds(args)
+    .map(id => Number(get(id)?.computedValue ?? get(id)?.value))
     .filter(n => !isNaN(n));
-};
 
-export const evaluateFormula = (
-  formula: string,
-  getCell: (id: string) => CellData | undefined
-): string | number | boolean => {
+export const evaluateFormula = (formula: string, get: GetCell): string | number | boolean => {
   if (!formula.startsWith('=')) return formula;
   const expr = formula.slice(1).trim().toUpperCase();
 
-  const funcMatch = expr.match(/^(SUM|AVERAGE|MIN|MAX|COUNT|COUNTA)\((.+)\)$/);
-  if (funcMatch) {
-    const [, funcName, args] = funcMatch;
-    const values = getNumericValues(args, getCell);
-
-    switch (funcName) {
-      case 'SUM':
-        return values.reduce((a, b) => a + b, 0);
-      case 'AVERAGE':
-        return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-    }
+  const fn = expr.match(/^(SUM|AVERAGE)\((.+)\)$/);
+  if (fn) {
+    const vals = nums(fn[2], get);
+    if (fn[1] === 'SUM')     return vals.reduce((a, b) => a + b, 0);
+    if (fn[1] === 'AVERAGE') return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
   }
 
-  const ifMatch = expr.match(/^IF\((.+),(.+),(.+)\)$/);
-  if (ifMatch) {
-    const [, condition, trueVal, falseVal] = ifMatch;
-    try {
-      const resolvedCondition = condition.replace(/([A-Z]+\d+)/g, match => {
-        const cell = getCell(match);
-        if (!cell) return '0';
-        const val = cell.computedValue ?? cell.value;
-        return isNaN(Number(val)) ? `"${val}"` : String(val);
-      });
-      const result = new Function(`"use strict"; return (${resolvedCondition})`)();
-      return result ? trueVal.trim() : falseVal.trim();
-    } catch {
-      return '#ERROR!';
-    }
-  }
-
-  const resolved = expr.replace(/([A-Z]+\d+)/g, match => {
-    const cell = getCell(match);
-    if (!cell) return '0';
-    const val = cell.computedValue ?? cell.value;
-    return isNaN(Number(val)) ? '0' : String(val);
+  const resolved = expr.replace(/([A-Z]+\d+)/g, id => {
+    const val = get(id)?.computedValue ?? get(id)?.value;
+    return isNaN(Number(val)) ? '0' : String(val ?? '0');
   });
 
   try {

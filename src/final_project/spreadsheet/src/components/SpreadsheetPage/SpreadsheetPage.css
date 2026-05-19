@@ -1,0 +1,83 @@
+.sp-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sp-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: #fff;
+  border-bottom: 1px solid #dee2e6;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.sp-back-btn {
+  background: none;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #495057;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+.sp-back-btn:hover { background: #f1f3f5; }
+
+.sp-title-wrapper { flex: 1; min-width: 120px; }
+.sp-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #212529;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}
+.sp-title:hover { text-decoration: underline; }
+.sp-title-input {
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid #1a73e8;
+  border-radius: 6px;
+  padding: 3px 8px;
+  outline: none;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.sp-toolbar { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.sp-grid-wrapper { flex: 1; overflow: hidden; }
+
+.sp-loading,
+.sp-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 16px;
+  font-size: 15px;
+  color: #6c757d;
+}
+
+/* Save status strip (inside SpreadsheetGrid) */
+.save-status {
+  padding: 2px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.save-status--saved   { color: #198754; background: #d1e7dd; }
+.save-status--saving  { color: #664d03; background: #fff3cd; }
+.save-status--unsaved { color: #664d03; background: #fff3cd; }
+.save-status--error   { color: #842029; background: #f8d7da; }
