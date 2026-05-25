@@ -22,9 +22,6 @@ interface Props {
 
 const formatValue = (cell: CellData) => {
   const v = cell.computedValue ?? cell.value;
-  if (cell.style.format === 'percent' && !isNaN(Number(v))) return `${(Number(v) * 100).toFixed(2)}%`;
-  if (cell.style.format === 'currency' && !isNaN(Number(v))) return Number(v).toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' });
-  if (cell.style.format === 'date' && v) { const d = new Date(String(v)); if (!isNaN(d.getTime())) return d.toLocaleDateString('ru-RU'); }
   return String(v ?? '');
 };
 

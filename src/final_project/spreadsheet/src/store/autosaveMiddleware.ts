@@ -1,7 +1,7 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import type { RootState } from './index';
-import { saveDocumentCells } from '../slices/spreadsheetSlice';
-import { setSaveStatus } from '../slices/uiSlice';
+import { saveDocumentCells } from './slices/spreadsheetSlice';
+import { setSaveStatus } from './slices/uiSlice';
 
 let timer: ReturnType<typeof setTimeout> | null = null;
 

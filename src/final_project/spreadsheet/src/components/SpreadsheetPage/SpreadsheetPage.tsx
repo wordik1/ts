@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { loadDocumentCells, saveDocumentCells, resetSpreadsheet } from '../../slices/spreadsheetSlice';
-import { renameDocument, setActiveDocument } from '../../slices/documentSlice';
+import { loadDocumentCells, saveDocumentCells, resetSpreadsheet, undo, redo } from '../../store/slices/spreadsheetSlice';
+import { renameDocument, setActiveDocument } from '../../store/slices/documentSlice';
 import { documentService } from '../../services/documentService';
 import { SpreadsheetGrid } from '../SpreadsheetGrid/mainComp';
 import './SpreadsheetPage.css';
@@ -19,6 +19,8 @@ export const SpreadsheetPage: React.FC<Props> = ({ documentId, onBack }) => {
   const rowCount = useAppSelector(state => state.spreadsheet.rowCount);
   const colCount = useAppSelector(state => state.spreadsheet.colCount);
   const loadingCells = useAppSelector(state => state.spreadsheet.loadingCells);
+  const historyIndex = useAppSelector(state => state.spreadsheet.historyIndex);
+  const historyLength = useAppSelector(state => state.spreadsheet.history.length);
 
   const doc = docs.find(d => d.id === documentId);
 
@@ -39,6 +41,16 @@ export const SpreadsheetPage: React.FC<Props> = ({ documentId, onBack }) => {
       dispatch(resetSpreadsheet());
     };
   }, [documentId]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!e.ctrlKey) return;
+      if (e.key === 'z') { e.preventDefault(); dispatch(undo()); }
+      if (e.key === 'y') { e.preventDefault(); dispatch(redo()); }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [dispatch]);
 
   if (!doc) {
     return (
@@ -73,19 +85,11 @@ export const SpreadsheetPage: React.FC<Props> = ({ documentId, onBack }) => {
   };
 
   const handleExportCSV = () => {
-    downloadFile(
-      `${title}.csv`,
-      documentService.exportCSV(cells, rowCount, colCount),
-      'text/csv'
-    );
+    downloadFile(`${title}.csv`, documentService.exportCSV(cells, rowCount, colCount), 'text/csv');
   };
 
   const handleExportJSON = () => {
-    downloadFile(
-      `${title}.json`,
-      documentService.exportJSON(cells),
-      'application/json'
-    );
+    downloadFile(`${title}.json`, documentService.exportJSON(cells), 'application/json');
   };
 
   const handleSaveNow = () => {
@@ -118,6 +122,22 @@ export const SpreadsheetPage: React.FC<Props> = ({ documentId, onBack }) => {
         </div>
 
         <div className="sp-toolbar">
+          <button
+            className="btn btn-ghost"
+            onClick={() => dispatch(undo())}
+            disabled={historyIndex <= 0}
+            title="Отменить (Ctrl+Z)"
+          >
+            ↩ Отменить
+          </button>
+          <button
+            className="btn btn-ghost"
+            onClick={() => dispatch(redo())}
+            disabled={historyIndex >= historyLength - 1}
+            title="Повторить (Ctrl+Y)"
+          >
+            ↪ Повторить
+          </button>
           <button className="btn btn-ghost" onClick={handleSaveNow}>💾 Ctrl+S</button>
           <button className="btn btn-ghost" onClick={handleExportCSV}>⬇ CSV</button>
           <button className="btn btn-ghost" onClick={handleExportJSON}>⬇ JSON</button>

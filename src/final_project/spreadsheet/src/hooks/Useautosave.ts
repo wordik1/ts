@@ -45,7 +45,7 @@ export const useAutosave = (
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveNow(); }
+      if ((e.ctrlKey) && e.key === 's') { e.preventDefault(); saveNow(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

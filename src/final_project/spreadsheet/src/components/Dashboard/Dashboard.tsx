@@ -6,8 +6,8 @@ import {
   deleteDocument,
   renameDocument,
   duplicateDocument,
-} from '../../slices/documentSlice';
-import { openCreateModal, closeCreateModal } from '../../slices/uiSlice';
+} from '../../store/slices/documentSlice';
+import { openCreateModal, closeCreateModal } from '../../store/slices/uiSlice';
 import { documentService } from '../../services/documentService';
 import { DocumentCard } from './DocumentCard';
 import { CreateDocModal } from './CreatedocModal';
